@@ -7,8 +7,8 @@ require 'timeout'
 include Clockwork
 
 class Timer
-  STATUSES = [:work, :not_work]
-  REGEXP = {work: /\As\w*\z/, not_work: /\A[ef]\w*\z/}
+  STATUSES = [:working, :not_working]
+  REGEXP = {working: /\As\w*\z/, not_working: /\A[ef]\w*\z/}
   INITIAL_STATUS_IDX = 1
 
   def initialize
@@ -17,7 +17,7 @@ class Timer
     @sum = {}
     @new_sum = {}
     STATUSES.each do |sym|
-      if f = File.open(sym.to_s)
+      if f = File.open(sym.to_s, "a+")
         if f.eof?
           @sum[sym] = 0
         else
@@ -41,8 +41,8 @@ class Timer
     @new_sum[@status] = @sum[@status] + sec
     total = time_range_presenter(@new_sum[@status])
 
-    puts "you continue #{@status}ing for #{time}"
-    puts "totally you #{@status}ed for #{total}"
+    puts "you continue #{@status} for #{time}"
+    puts "totally you have been #{@status} for #{total}"
 
     File.open(@status.to_s, "w") do |file|
       file.write((@new_sum[@status]).to_s)
