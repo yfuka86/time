@@ -58,10 +58,10 @@ class Timer
             line.chomp!
             STATUSES.each do |sym|
               if line =~ REGEXP[sym] && @status != sym
+                @sum[@status] = @new_sum[@status]
                 @status = sym
                 @from = Time.now
               end
-              @sum[sym] = @new_sum[sym]
             end
           end
         end
@@ -73,6 +73,7 @@ class Timer
 
     every(1.hours, 'twitter') do
       puts TwitterClient.new.post("#{@status.to_s}:#{@new_sum[@status]}")
+      puts `afplay sound.mp3`
     end
   end
 end
