@@ -72,7 +72,7 @@ class Timer
     end
 
     every(1.hours, 'twitter') do
-      puts TwitterClient.new.post("#{@status.to_s}:#{@sum[@status]}")
+      puts TwitterClient.new.post("#{@status.to_s}:#{@new_sum[@status]}")
     end
   end
 end
