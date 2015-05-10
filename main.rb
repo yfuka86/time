@@ -49,12 +49,15 @@ class Timer
       file.write((@new_sum[@status]).to_s)
     end
 
-    if (now.sec == 0 && now.min == 0 && now.hour % 6 == 0)
-      str = "total:\n"
-      STATUSES.each do |status|
-        str += "#{status.to_s}:#{time_range_presenter(@new_sum[status])}\n"
+    if now.sec == 0 && now.min == 0
+      puts `afplay sound.mp3`
+      if now.hour % 6 == 0
+        str = "total:\n"
+        STATUSES.each do |status|
+          str += "#{status.to_s}:#{time_range_presenter(@new_sum[status])}\n"
+        end
+        puts TwitterClient.new.post(str)
       end
-      puts TwitterClient.new.post(str)
     end
   end
 
@@ -78,10 +81,6 @@ class Timer
       rescue Timeout::Error
         puts_time
       end
-    end
-
-    every(1.hours, 'sound') do
-      puts `afplay sound.mp3`
     end
   end
 end
