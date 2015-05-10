@@ -32,11 +32,12 @@ class Timer
 
   def time_range_presenter(sec)
     day = sec.to_i / 86400
-    time = (Time.parse("1/1") + (sec - day * 86400)).strftime("#{day}日%-H時間%-M分%-S秒")
+    time = (Time.parse("1/1") + (sec - day * 86400)).strftime("#{day}D,%-Hh%-Mm%-Ss")
   end
 
   def puts_time
-    sec = Time.now - @from
+    now = Time.now
+    sec = now - @from
     time = time_range_presenter(sec)
     @new_sum[@status] = @sum[@status] + sec
     total = time_range_presenter(@new_sum[@status])
@@ -46,6 +47,14 @@ class Timer
 
     File.open(@status.to_s, "w") do |file|
       file.write((@new_sum[@status]).to_s)
+    end
+
+    if (now.sec == 0 && now.min == 0 && now.hour % 6 == 0)
+      str = "total:\n"
+      STATUSES.each do |status|
+        str += "#{status.to_s}:#{time_range_presenter(@new_sum[status])}\n"
+      end
+      puts TwitterClient.new.post(str)
     end
   end
 
@@ -71,8 +80,7 @@ class Timer
       end
     end
 
-    every(1.hours, 'twitter') do
-      puts TwitterClient.new.post("#{@status.to_s}:#{@new_sum[@status]}")
+    every(1.hours, 'sound') do
       puts `afplay sound.mp3`
     end
   end
